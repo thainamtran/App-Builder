@@ -64,7 +64,7 @@
       <h2 id="apps-title">Your apps</h2>
       <ul id="apps"></ul>
       <div id="empty" class="empty" hidden>No apps yet. Tap + to create your first one.</div>
-      <p class="note">Sample data for now. Saving apps to an account isn't built yet.</p>
+      <p class="note">Apps you add are saved on this device only. Saving to an account isn't built yet.</p>
     </section>
   </main>
 
@@ -88,12 +88,19 @@
       }
     }
 
-    // Placeholder apps; there is no backend yet, so new ones only live in this tab.
-    var apps = [
+    // Sample apps plus apps saved on this device (no backend yet).
+    var samples = [
       { name: "Line-Following Bot", note: "Sample app" },
       { name: "Robot Arm Basics", note: "Sample app" },
       { name: "Obstacle Avoider", note: "Sample app" }
     ];
+    var saved = [];
+    try {
+      saved = JSON.parse(localStorage.getItem("apps:" + ((user && user.email) || "anon"))) || [];
+    } catch (e) {}
+    var apps = saved.map(function (a) {
+      return { name: a.name, note: a.description || "No description" };
+    }).concat(samples);
 
     function renderApps() {
       var list = document.getElementById("apps");
@@ -116,11 +123,7 @@
     renderApps();
 
     document.getElementById("add").addEventListener("click", function () {
-      var name = window.prompt("Name your new app (app creation isn't built yet, so this is just a preview):");
-      if (name && name.trim()) {
-        apps.unshift({ name: name.trim(), note: "New (not saved)" });
-        renderApps();
-      }
+      window.location.href = "new-app.html";
     });
 
     document.getElementById("signout").addEventListener("click", function () {

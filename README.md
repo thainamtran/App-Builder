@@ -3,7 +3,7 @@
 A simple app for learning about robots.
 
 ## Current state
-A mobile-first "Sign in with Google" login page (`index.html`) that redirects to a simple welcome page (`home.html`) with a sign-out button. No build step.
+A mobile-first "Sign in with Google" login page (`index.html`) that redirects to a simple welcome page (`home.html`) with a sign-out button, an app list, and a new-app form (`new-app.html`). No build step.
 
 ## Setup
 1. In Google Cloud Console, create an OAuth 2.0 **Web application** client ID.
