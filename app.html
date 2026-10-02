@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f172a">
+  <title>App Builder – App</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { min-height: 100%; margin: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #0f172a; color: #f8fafc;
+      padding: calc(env(safe-area-inset-top) + 24px) 20px calc(env(safe-area-inset-bottom) + 32px);
+    }
+    main { width: 100%; max-width: 360px; margin: 0 auto; }
+    a.back { color: #94a3b8; text-decoration: none; font-size: 16px; display: inline-block; padding: 8px 0; }
+    .logo { font-size: 48px; line-height: 1; margin: 8px 0 12px; text-align: center; }
+    h1 { font-size: 26px; margin: 0 0 8px; text-align: center; word-break: break-word; }
+    .badge { text-align: center; color: #94a3b8; font-size: 13px; margin-bottom: 24px; }
+    .card { background: #1e293b; border-radius: 14px; padding: 16px; margin-bottom: 24px; }
+    .card h2 { font-size: 13px; font-weight: 600; color: #94a3b8; margin: 0 0 6px; text-transform: uppercase; letter-spacing: .04em; }
+    .card p { margin: 0; font-size: 16px; line-height: 1.45; white-space: pre-wrap; word-break: break-word; }
+    button.delete {
+      width: 100%; min-height: 52px; border: 0; border-radius: 999px;
+      background: #dc2626; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer;
+    }
+    button.delete:active { background: #b91c1c; }
+    .note { text-align: center; color: #64748b; font-size: 13px; }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="home.html">&larr; Back</a>
+    <div class="logo" aria-hidden="true">🤖</div>
+    <h1 id="title">App</h1>
+    <div class="badge" id="badge"></div>
+    <div class="card">
+      <h2>Description</h2>
+      <p id="description"></p>
+    </div>
+    <button class="delete" id="delete" type="button" hidden>Delete app</button>
+    <p class="note" id="sample-note" hidden>Sample apps can't be deleted.</p>
+  </main>
+
+  <script>
+    var user = null;
+    try { user = JSON.parse(sessionStorage.getItem("user")); } catch (e) {}
+    if (!user) window.location.replace("index.html");
+
+    var KEY = "apps:" + ((user && user.email) || "anon");
+    var id = new URLSearchParams(window.location.search).get("id") || "";
+
+    var samples = {
+      "sample-1": { name: "Line-Following Bot", description: "Sample app" },
+      "sample-2": { name: "Robot Arm Basics", description: "Sample app" },
+      "sample-3": { name: "Obstacle Avoider", description: "Sample app" }
+    };
+
+    function loadSaved() {
+      try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; }
+    }
+
+    var app = null, isSample = false;
+    if (samples[id]) {
+      app = samples[id]; isSample = true;
+    } else {
+      var list = loadSaved();
+      for (var i = 0; i < list.length; i++) { if (list[i].id === id) { app = list[i]; break; } }
+    }
+
+    if (!app) {
+      document.getElementById("title").textContent = "App not found";
+      document.getElementById("description").textContent = "This app doesn't exist on this device. It may have been deleted.";
+    } else {
+      document.getElementById("title").textContent = app.name;
+      document.getElementById("description").textContent = app.description || "No description";
+      document.getElementById("badge").textContent = isSample ? "Sample app" : "Saved on this device";
+      if (isSample) {
+        document.getElementById("sample-note").hidden = false;
+      } else {
+        document.getElementById("delete").hidden = false;
+      }
+    }
+
+    document.getElementById("delete").addEventListener("click", function () {
+      if (!app || isSample) return;
+      if (!window.confirm('Delete "' + app.name + '"? This can\'t be undone.')) return;
+      var remaining = loadSaved().filter(function (a) { return a.id !== id; });
+      localStorage.setItem(KEY, JSON.stringify(remaining));
+      window.location.href = "home.html";
+    });
+  </script>
+</body>
+</html>

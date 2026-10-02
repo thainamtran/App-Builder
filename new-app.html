@@ -71,7 +71,7 @@
       }
       var list = [];
       try { list = JSON.parse(localStorage.getItem(storageKey())) || []; } catch (err) {}
-      list.unshift({ name: name, description: description, createdAt: Date.now() });
+      list.unshift({ id: "a" + Date.now().toString(36) + Math.random().toString(36).slice(2, 7), name: name, description: description, createdAt: Date.now() });
       localStorage.setItem(storageKey(), JSON.stringify(list));
       window.location.href = "home.html";
     });
